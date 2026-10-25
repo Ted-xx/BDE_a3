@@ -1,0 +1,31 @@
+name: 'bde_a3'
+version: '1.0.0'
+config-version: 2
+
+profile: 'bde_a3'
+
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+# Medallion layout:
+#   bronze  - raw tables loaded by Airflow (declared as dbt sources)
+#   silver  - cleaned, typed tables + SCD2 snapshots of the dimension entities
+#   gold    - star schema (dimensions, fact, census reference) + datamart views
+models:
+  bde_a3:
+    silver:
+      +schema: silver
+      +materialized: table
+    gold:
+      +schema: gold
+      +materialized: table
+    datamart:
+      +schema: gold
+      +materialized: view
+
+snapshots:
+  bde_a3:
+    +target_schema: silver
